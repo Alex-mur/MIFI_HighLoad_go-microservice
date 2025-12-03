@@ -1,0 +1,38 @@
+# Binaries for your project
+/bin
+/dist
+/out
+
+# Go specific
+*.go.swp
+*.go.swo
+*.test
+coverage.html
+coverage.txt
+*.test.bin
+go.sum
+vendor/
+
+# IDE specific
+.idea/
+.vscode/
+*.swp
+*.swo
+*.tmp
+
+# Environment files
+.env
+.env.local
+.env.dev
+
+# Dependency directories
+node_modules/
+$GOPATH
+
+# Build output
+*.exe
+*.so
+
+# OS specific
+.DS_Store
+Thumbs.db
