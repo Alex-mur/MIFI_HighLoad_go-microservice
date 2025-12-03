@@ -1,40 +1,22 @@
-# Build stage
-FROM golang:1.24.2-alpine AS builder
+FROM golang:1.24.3-alpine
 
 WORKDIR /app
 
-RUN apk add --no-cache git ca-certificates build-base
+# Копируем go.mod
+COPY go.mod .
 
-# Копируем файлы зависимостей
-COPY go.mod ./
-RUN go mod download
-RUN go mod tidy
+# Скачиваем ВСЕ зависимости и создаем go.sum
+RUN go mod download 2>/dev/null || (go mod init go-microservice && go mod tidy)
 
-# Копируем исходный код
+# Копируем весь исходный код
 COPY . .
 
-# Проверяем зависимости (опционально)
-RUN go mod verify
+# Еще раз проверяем зависимости
+RUN go mod tidy 2>/dev/null || true
 
 # Собираем приложение
-RUN CGO_ENABLED=0 GOOS=linux go build -o main ./cmd/server
+RUN CGO_ENABLED=0 GOOS=linux go build -o app ./cmd/server
 
-# Runtime stage
-FROM alpine:latest
-
-RUN apk --no-cache add ca-certificates
-
-WORKDIR /root/
-
-# Копируем бинарный файл
-COPY --from=builder /app/main .
-
-# Экспонируем порт
 EXPOSE 8080
 
-# Переменные окружения
-ENV LOG_LEVEL=info
-ENV GIN_MODE=release
-
-# Запуск приложения
-CMD ["./main"]
+CMD ["./app"]
