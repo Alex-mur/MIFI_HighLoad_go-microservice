@@ -5,6 +5,7 @@ WORKDIR /app
 
 # Копируем файлы зависимостей
 COPY go.mod ./
+RUN go mod tidy
 RUN go mod download
 
 # Копируем исходный код
