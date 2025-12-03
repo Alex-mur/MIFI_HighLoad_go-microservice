@@ -3,13 +3,18 @@ FROM golang:1.24.2-alpine AS builder
 
 WORKDIR /app
 
+RUN apk add --no-cache git ca-certificates build-base
+
 # Копируем файлы зависимостей
 COPY go.mod ./
-RUN go mod tidy
 RUN go mod download
+RUN go mod tidy
 
 # Копируем исходный код
 COPY . .
+
+# Проверяем зависимости (опционально)
+RUN go mod verify
 
 # Собираем приложение
 RUN CGO_ENABLED=0 GOOS=linux go build -o main ./cmd/server
